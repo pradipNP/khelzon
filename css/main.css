@@ -141,7 +141,8 @@ body::before {
   background: rgba(255, 255, 255, 0.6);
 }
 
-.github-svg {
+.github-svg,
+.theme-svg {
   display: block;
 }
 
@@ -378,6 +379,11 @@ body::before {
   transition: var(--transition);
 }
 
+[data-theme="light"] .btn-lobby-outline {
+  border-color: rgba(26, 26, 46, 0.2);
+  background: rgba(255, 255, 255, 0.6);
+}
+
 .btn-lobby-outline:hover {
   border-color: var(--accent-saffron);
   color: var(--accent-saffron);
@@ -396,6 +402,11 @@ body::before {
   color: var(--text-primary);
   cursor: pointer;
   transition: var(--transition);
+}
+
+[data-theme="light"] .btn-lobby-square {
+  border-color: rgba(26, 26, 46, 0.2);
+  background: rgba(255, 255, 255, 0.6);
 }
 
 .btn-lobby-square:hover {
@@ -423,6 +434,12 @@ body::before {
   border-radius: 2px;
   padding: 1rem;
   background: rgba(18, 18, 28, 0.85);
+}
+
+[data-theme="light"] .lobby-deck-frame {
+  background: var(--bg-card);
+  border-color: var(--border);
+  box-shadow: var(--shadow-card);
 }
 
 .lobby-deck-header {
@@ -504,6 +521,10 @@ body::before {
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
+[data-theme="light"] .lobby-deck-row {
+  border-bottom-color: rgba(26, 26, 46, 0.08);
+}
+
 .lobby-deck-row dt {
   color: var(--text-muted);
   font-weight: 400;
@@ -546,6 +567,10 @@ body::before {
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
+[data-theme="light"] .lobby-subhead {
+  border-bottom-color: var(--border);
+}
+
 .lobby-back {
   display: inline-flex;
   align-items: center;
@@ -561,6 +586,11 @@ body::before {
   border-radius: 2px;
   cursor: pointer;
   transition: var(--transition);
+}
+
+[data-theme="light"] .lobby-back {
+  border-color: rgba(26, 26, 46, 0.2);
+  background: rgba(255, 255, 255, 0.6);
 }
 
 .lobby-back:hover {
@@ -586,6 +616,11 @@ body::before {
   border-radius: 2px;
   padding: 1.5rem;
   background: rgba(18, 18, 28, 0.6);
+}
+
+[data-theme="light"] .lobby-panel {
+  background: var(--bg-card);
+  border-color: var(--border);
 }
 
 .lobby-panel h3 {
@@ -801,6 +836,11 @@ body::before {
   border-bottom: 1px solid var(--border);
 }
 
+[data-theme="light"] .header {
+  background: rgba(245, 240, 235, 0.88);
+  border-bottom-color: var(--border);
+}
+
 .header-menu-btn {
   display: none;
   flex-direction: column;
@@ -886,9 +926,18 @@ body::before {
   max-width: 140px;
 }
 
+[data-theme="light"] .user-badge {
+  background: rgba(123, 104, 238, 0.12);
+  border-color: rgba(123, 104, 238, 0.3);
+}
+
 .user-badge:hover {
   background: rgba(123, 104, 238, 0.25);
   border-color: var(--accent-purple);
+}
+
+[data-theme="light"] .user-badge:hover {
+  background: rgba(123, 104, 238, 0.2);
 }
 
 .user-badge-name {
@@ -1356,6 +1405,11 @@ body.game-active .app {
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border);
   min-height: 60px;
+}
+
+[data-theme="light"] .game-screen-header {
+  background: rgba(245, 240, 235, 0.92);
+  border-bottom-color: var(--border);
 }
 
 .game-screen-back {
