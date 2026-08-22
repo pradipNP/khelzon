@@ -15,6 +15,7 @@ const ASSETS = [
   './js/gameFit.js',
   './js/users.js',
   './manifest.json',
+  './assets/og-image.png',
 ];
 
 self.addEventListener('install', e => {
