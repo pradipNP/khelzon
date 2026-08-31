@@ -2,6 +2,7 @@ import './resetScoresModal.js';
 import { initRouter, setupGameScreen, refreshCurrentView } from './router.js';
 import { gameRegistry } from './gameRegistry.js';
 import { setupUsers, updateUserBadge } from './users.js';
+import { setupRequestGame } from './requestGame.js';
 import { storage } from './storage.js';
 import { initLobby } from './lobby.js';
 import { initTheme, renderToolPair, syncThemeToggleUI } from './theme.js';
@@ -90,6 +91,7 @@ async function boot() {
   storage.init();
   initLobby();
   setupUsers(refreshCurrentView);
+  setupRequestGame();
 
   initCrossTabSync(() => {
     refreshCurrentView();

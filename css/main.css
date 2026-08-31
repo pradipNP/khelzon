@@ -1422,6 +1422,27 @@ body::before {
   border-top: 1px solid var(--border);
 }
 
+.footer-link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.5rem;
+  background: none;
+  border: none;
+  color: var(--accent-saffron);
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-sm);
+  transition: var(--transition);
+}
+
+.footer-link-btn:hover {
+  background: rgba(244, 162, 97, 0.1);
+}
+
 /* ── Fullscreen Game Screen ── */
 body.game-active {
   overflow: hidden;
@@ -1861,6 +1882,117 @@ body.game-active .app {
 }
 
 .user-create-error {
+  font-size: 0.8rem;
+  color: var(--accent-coral);
+  margin-top: 0.5rem;
+}
+
+/* ── Request a Game Modal ── */
+.request-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 8000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--transition), visibility var(--transition);
+}
+
+.request-modal.open {
+  pointer-events: auto;
+  opacity: 1;
+  visibility: visible;
+}
+
+.request-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
+}
+
+.request-modal-panel {
+  position: relative;
+  width: min(480px, 100%);
+  max-height: 85dvh;
+  overflow-y: auto;
+  background: var(--bg-base);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5);
+}
+
+.request-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.request-modal-close {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0.25rem;
+}
+
+.request-modal-close:hover {
+  color: var(--accent-saffron);
+}
+
+.request-modal-desc {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 1rem;
+}
+
+.request-game-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.request-game-form label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-top: 0.5rem;
+}
+
+.request-game-form input,
+.request-game-form select,
+.request-game-form textarea {
+  padding: 0.55rem 0.85rem;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  resize: vertical;
+}
+
+.request-game-form input:focus,
+.request-game-form select:focus,
+.request-game-form textarea:focus {
+  outline: none;
+  border-color: var(--accent-saffron);
+}
+
+.request-game-form button {
+  margin-top: 0.75rem;
+  align-self: flex-start;
+}
+
+.request-game-error {
   font-size: 0.8rem;
   color: var(--accent-coral);
   margin-top: 0.5rem;

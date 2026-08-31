@@ -113,6 +113,7 @@
 
     <footer class="footer">
       <p>KhelZon &copy; 2026 · Scores saved locally · Export backup from Players · No cloud account</p>
+      <button class="footer-link-btn" id="requestGameBtn" type="button">💡 Request a Game</button>
     </footer>
   </div>
 
@@ -131,6 +132,37 @@
         <button type="submit" class="btn btn-primary">Add &amp; Switch</button>
       </form>
       <p class="user-create-error" id="userCreateError" hidden></p>
+    </div>
+  </div>
+
+  <!-- Request a Game Modal -->
+  <div class="request-modal" id="requestGameModal" aria-hidden="true" role="dialog" aria-labelledby="requestGameModalTitle">
+    <div class="request-modal-backdrop" id="requestGameModalBackdrop"></div>
+    <div class="request-modal-panel">
+      <div class="request-modal-header">
+        <h2 id="requestGameModalTitle">Request a Game</h2>
+        <button class="request-modal-close" id="requestGameModalClose" aria-label="Close">&times;</button>
+      </div>
+      <p class="request-modal-desc">Got an idea for a single-player game? Tell us about it — we'll review every suggestion.</p>
+      <form id="requestGameForm" class="request-game-form">
+        <label for="requestGameName">Game Name / Idea</label>
+        <input type="text" id="requestGameName" maxlength="60" required aria-required="true" autocomplete="off" />
+
+        <label for="requestGameCategory">Preferred Category</label>
+        <select id="requestGameCategory">
+          <option value="Action">Action</option>
+          <option value="Puzzle">Puzzle</option>
+          <option value="Retro">Retro</option>
+          <option value="Strategy">Strategy</option>
+          <option value="Relax">Relax</option>
+        </select>
+
+        <label for="requestGameDescription">Description or reference link</label>
+        <textarea id="requestGameDescription" rows="3" maxlength="500" required aria-required="true"></textarea>
+
+        <button type="submit" class="btn btn-primary">Submit Request</button>
+      </form>
+      <p class="request-game-error" id="requestGameError" hidden></p>
     </div>
   </div>
 
