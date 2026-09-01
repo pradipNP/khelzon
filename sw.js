@@ -21,6 +21,8 @@ const ASSETS = [
   './js/users.js',
   './manifest.json',
   './assets/og-image.png',
+  './icons/icon-192.png',
+  './icons/icon-512.png',
   './js/games/marble-solo.js',
   './js/games/snake-rush.js',
   './js/games/cascade.js',

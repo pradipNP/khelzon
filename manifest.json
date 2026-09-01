@@ -12,6 +12,18 @@
   "categories": ["games", "entertainment"],
   "icons": [
     {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
       "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%231a1a2e' width='192' height='192' rx='32'/><text x='96' y='130' font-size='100' text-anchor='middle' fill='%23f4a261'>🎯</text></svg>",
       "sizes": "192x192",
       "type": "image/svg+xml",
