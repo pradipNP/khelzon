@@ -167,6 +167,11 @@ body::before {
   gap: 0.35rem;
 }
 
+
+.header-tools,
+.game-screen-tools {
+  gap: 0.35rem;
+}
 .header-tools .tool-btn,
 .game-screen-tools .tool-btn {
   width: 36px;
