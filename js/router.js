@@ -128,6 +128,9 @@ function renderHomePage() {
       <input id="arcadeSearch" class="arcade-search" type="search"
         placeholder="Search games" autocomplete="off"
         aria-label="Search games by name" value="${activeSearch}">
+      <button id="surpriseMeBtn" type="button" class="btn btn-primary surprise-me-btn" aria-label="Play a random game">
+        <span aria-hidden="true">🎲</span> Surprise Me
+      </button>
     </div>
 
     <div class="filter-bar" id="filterBar">
@@ -160,8 +163,17 @@ function bindHomeEvents() {
     const card = e.target.closest('[data-game]');
     if (card) location.hash = `#/play/${card.dataset.game}`;
   });
-const search = document.getElementById('arcadeSearch');
-if (search) {
+  const surpriseBtn = document.getElementById('surpriseMeBtn');
+  if (surpriseBtn) {
+    surpriseBtn.addEventListener('click', () => {
+      if (!gameRegistry.length) return;
+      const game = gameRegistry[Math.floor(Math.random() * gameRegistry.length)];
+      location.hash = `#/play/${game.id}`;
+    });
+  }
+
+  const search = document.getElementById('arcadeSearch');
+  if (search) {
   search.addEventListener('input', e => {
     activeSearch = e.target.value;
     main.dataset.bound = '';

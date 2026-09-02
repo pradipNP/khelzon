@@ -1,4 +1,5 @@
 import { storage } from '../storage.js';
+import { shareScore } from '../share.js';
 
 const PADS = [
   { id: 0, color: '#e76f51', label: 'Coral' },
@@ -99,10 +100,12 @@ export default function initTapSequence(container) {
 
     if (id !== sequence[playerIdx]) {
       accepting = false;
-      storage.saveScore('tap-sequence', sequence.length - 1);
+      const finalScore = sequence.length - 1;
+      storage.saveScore('tap-sequence', finalScore);
       document.getElementById('tsBest').textContent = storage.getScore('tap-sequence').best;
       document.getElementById('tsMsg').className = 'game-msg game-msg--compact lose';
-      document.getElementById('tsMsg').textContent = `Wrong! Reached ${sequence.length - 1} steps.`;
+      document.getElementById('tsMsg').innerHTML = `Wrong! Reached ${finalScore} steps. <button id="tsShareBtn" class="btn btn-share">Share Score ↗</button>`;
+      document.getElementById('tsShareBtn').addEventListener('click', () => shareScore(finalScore, 'Tap Sequence'));
       sequence = [];
       document.getElementById('tsSeq').textContent = '0';
       return;

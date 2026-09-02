@@ -1,4 +1,5 @@
 import { storage } from '../storage.js';
+import { shareScore } from '../share.js';
 
 const SIZE = 4;
 
@@ -111,12 +112,14 @@ export default function initCascade(container) {
 
     if (maxTile() >= 4096 && !won) {
       won = true;
-      document.getElementById('caMsg').innerHTML = '<div class="game-msg win">🎉 You reached 4096!</div>';
+      document.getElementById('caMsg').innerHTML = `<div class="game-msg win">🎉 You reached 4096! Score: ${score}</div><button id="caShareBtn" class="btn btn-share">Share Score ↗</button>`;
+      document.getElementById('caShareBtn').addEventListener('click', () => shareScore(score, 'Cascade'));
     }
     if (!canMove()) {
       over = true;
       storage.saveScore('cascade', score);
-      document.getElementById('caMsg').innerHTML = `<div class="game-msg lose">No moves left. Final score: ${score}</div>`;
+      document.getElementById('caMsg').innerHTML = `<div class="game-msg lose">No moves left. Final score: ${score}</div><button id="caShareBtn" class="btn btn-share">Share Score ↗</button>`;
+      document.getElementById('caShareBtn').addEventListener('click', () => shareScore(score, 'Cascade'));
     }
   }
 

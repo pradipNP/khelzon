@@ -1,4 +1,5 @@
 import { storage } from '../storage.js';
+import { shareScore } from '../share.js';
 
 const EMOJIS = ['🎯', '🎮', '🎲', '🎪', '🎨', '🎭', '🎸', '🎺', '🏆', '⭐', '🌟', '💎'];
 
@@ -86,7 +87,8 @@ export default function initMemoryMatrix(container) {
       document.getElementById('mmTime').textContent = timeLeft;
       if (timeLeft <= 0) {
         clearInterval(timer);
-        document.getElementById('mmMsg').innerHTML = '<div class="game-msg game-msg--compact lose">Time\'s up!</div>';
+        document.getElementById('mmMsg').innerHTML = `<div class="game-msg game-msg--compact lose">Time's up! Score: ${pairs * 100}</div><button id="mmShareBtn" class="btn btn-share">Share Score ↗</button>`;
+        document.getElementById('mmShareBtn').addEventListener('click', () => shareScore(pairs * 100, 'Memory Matrix'));
         lock = true;
       }
     }, 1000);
@@ -157,7 +159,8 @@ export default function initMemoryMatrix(container) {
           const bonus = timeLeft * 2;
           const finalScore = Math.max(0, 1000 - moves * 10 + bonus);
           storage.saveScore('memory-matrix', finalScore);
-          document.getElementById('mmMsg').innerHTML = `<div class="game-msg game-msg--compact win">Complete! Score: ${finalScore}</div>`;
+          document.getElementById('mmMsg').innerHTML = `<div class="game-msg game-msg--compact win">Complete! Score: ${finalScore}</div><button id="mmShareBtn" class="btn btn-share">Share Score ↗</button>`;
+          document.getElementById('mmShareBtn').addEventListener('click', () => shareScore(finalScore, 'Memory Matrix'));
           lock = true;
         }
       } else {

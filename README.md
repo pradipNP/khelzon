@@ -128,6 +128,12 @@ Contributions are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for setup, cod
 
 Please read [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) before participating.
 
+## Support / Star the project
+
+If KhelZon helps you — for casual play, learning game dev, or building your own arcade — please **star the repository** on GitHub. It helps others discover the project and supports continued development.
+
+[![Star KhelZon on GitHub](https://img.shields.io/github/stars/pradipNP/khelzon?style=social&label=Star%20KhelZon)](https://github.com/pradipNP/khelzon)
+
 ## License
 
 [MIT](LICENSE) — Copyright (c) 2026 Pradip Kumar Prajapati.

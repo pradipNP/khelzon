@@ -1,5 +1,6 @@
 import { storage } from '../storage.js';
 import { fitGrid } from '../gameFit.js';
+import { shareScore } from '../share.js';
 
 const SIZE = 3;
 const GOAL = [1, 2, 3, 4, 5, 6, 7, 8, 0];
@@ -81,7 +82,8 @@ export default function initSlideQuest(container) {
       const score = Math.max(1000 - moves * 15, 100);
       storage.saveScore('slide-quest', score, 'high');
       document.getElementById('sqMsg').innerHTML =
-        `<div class="game-msg win">Solved in ${moves} moves! Score: ${score}</div>`;
+        `<div class="game-msg win">Solved in ${moves} moves! Score: ${score}</div><button id="sqShareBtn" class="btn btn-share">Share Score ↗</button>`;
+      document.getElementById('sqShareBtn').addEventListener('click', () => shareScore(score, 'Slide Quest'));
       const best = storage.getScore('slide-quest');
       document.getElementById('sqBest').textContent = best.best || score;
     }

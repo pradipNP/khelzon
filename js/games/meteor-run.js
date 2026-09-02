@@ -1,5 +1,6 @@
 import { storage } from '../storage.js';
 import { fitCanvasDisplay } from '../gameFit.js';
+import { shareScore } from '../share.js';
 
 export default function initMeteorRun(container) {
   const W = 400, H = 500;
@@ -104,7 +105,8 @@ export default function initMeteorRun(container) {
           running = false;
           storage.saveScore('meteor-run', score);
           document.getElementById('mrMsg').innerHTML =
-            `<div class="game-msg lose">Destroyed! Score: ${score}</div>`;
+            `<div class="game-msg lose">Destroyed! Score: ${score}</div><button id="mrShareBtn" class="btn btn-share">Share Score ↗</button>`;
+          document.getElementById('mrShareBtn').addEventListener('click', () => shareScore(score, 'Meteor Run'));
           draw();
           return;
         }

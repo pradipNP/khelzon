@@ -1,4 +1,4 @@
-const CACHE = 'khelzon-v2';
+const CACHE = 'khelzon-v4';
 const ASSETS = [
   './',
   './index.html',
@@ -6,6 +6,11 @@ const ASSETS = [
   './css/games.css',
   './js/app.js',
   './js/theme.js',
+  './js/sound.js',
+  './js/shortcutsHelp.js',
+  './js/resetScoresModal.js',
+  './js/share.js',
+  './js/requestGame.js',
   './js/pwa.js',
   './js/sync.js',
   './js/lobby.js',
@@ -16,6 +21,8 @@ const ASSETS = [
   './js/users.js',
   './manifest.json',
   './assets/og-image.png',
+  './icons/icon-192.png',
+  './icons/icon-512.png',
   './js/games/marble-solo.js',
   './js/games/snake-rush.js',
   './js/games/cascade.js',

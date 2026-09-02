@@ -1,6 +1,7 @@
 import { isSoundEnabled, getAudioContext } from '../sound.js';
 import { storage } from '../storage.js';
 import { fitCanvasDisplay } from '../gameFit.js';
+import { shareScore } from '../share.js';
 
 // --- Sound FX ---
 function playLaser() {
@@ -168,7 +169,8 @@ export default function initStarDrift(container) {
         if (hp <= 0) {
           running = false;
           storage.saveScore('star-drift', score);
-          document.getElementById('sdMsg').innerHTML = `<div class="game-msg lose">Destroyed! Score: ${score}</div>`;
+          document.getElementById('sdMsg').innerHTML = `<div class="game-msg lose">Destroyed! Score: ${score}</div><button id="sdShareBtn" class="btn btn-share">Share Score ↗</button>`;
+          document.getElementById('sdShareBtn').addEventListener('click', () => shareScore(score, 'Star Drift'));
         }
         return false;
       }

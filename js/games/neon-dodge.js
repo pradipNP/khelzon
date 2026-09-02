@@ -1,5 +1,6 @@
 import { storage } from '../storage.js';
 import { fitCanvasDisplay } from '../gameFit.js';
+import { shareScore } from '../share.js';
 
 export default function initNeonDodge(container) {
   const W = 360, H = 480;
@@ -106,7 +107,8 @@ export default function initNeonDodge(container) {
         running = false;
         storage.saveScore('neon-dodge', score);
         document.getElementById('ndMsg').innerHTML =
-          `<div class="game-msg lose">Hit! Score: ${score}</div>`;
+          `<div class="game-msg lose">Hit! Score: ${score}</div><button id="ndShareBtn" class="btn btn-share">Share Score ↗</button>`;
+        document.getElementById('ndShareBtn').addEventListener('click', () => shareScore(score, 'Neon Dodge'));
         draw();
         return;
       }

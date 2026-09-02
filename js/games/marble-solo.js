@@ -1,5 +1,6 @@
 import { storage } from '../storage.js';
 import { fitCanvasDisplay, canvasPointer } from '../gameFit.js';
+import { shareScore } from '../share.js';
 
 const TRACK = 40;
 const PLAYER = { color: '#e9c46a', name: 'You', homeStart: 0 };
@@ -221,12 +222,18 @@ export default function initMarbleSolo(container) {
   function checkWin() {
     if (countHome('player') === 4) {
       gameOver = true;
-      showMsg('🎉 You win! All marbles home.', 'win');
       storage.saveScore('marble-solo', 1);
+      msgEl.hidden = false;
+      msgEl.className = 'game-msg game-msg--compact win';
+      msgEl.innerHTML = `🎉 You win! All marbles home. <button id="mqShareBtn" class="btn btn-share">Share Score ↗</button>`;
+      document.getElementById('mqShareBtn').addEventListener('click', () => shareScore(1, 'Marble Solo'));
     } else if (countHome('cpu') === 4) {
       gameOver = true;
-      showMsg('CPU wins. Try again!', 'lose');
       storage.saveScore('marble-solo', 0);
+      msgEl.hidden = false;
+      msgEl.className = 'game-msg game-msg--compact lose';
+      msgEl.innerHTML = `CPU wins. Try again! <button id="mqShareBtn" class="btn btn-share">Share Score ↗</button>`;
+      document.getElementById('mqShareBtn').addEventListener('click', () => shareScore(0, 'Marble Solo'));
     }
   }
 
