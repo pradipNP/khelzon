@@ -1,5 +1,52 @@
+import { isSoundEnabled, getAudioContext } from '../sound.js';
 import { storage } from '../storage.js';
 import { fitCanvasDisplay } from '../gameFit.js';
+
+// --- Sound FX ---
+function playLaser() {
+  if (!isSoundEnabled()) return;
+  const ctx = getAudioContext();
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.type = 'square';
+  osc.frequency.setValueAtTime(1200, ctx.currentTime);
+  osc.frequency.exponentialRampToValueAtTime(200, ctx.currentTime + 0.12);
+  gain.gain.setValueAtTime(0.15, ctx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12);
+  osc.connect(gain).connect(ctx.destination);
+  osc.start();
+  osc.stop(ctx.currentTime + 0.12);
+}
+
+function playExplosion({ big = false } = {}) {
+  if (!isSoundEnabled()) return;
+  const ctx = getAudioContext();
+  const duration = big ? 0.6 : 0.3;
+  const bufferSize = Math.floor(ctx.sampleRate * duration);
+  const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < bufferSize; i++) {
+    data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize);
+  }
+  const noise = ctx.createBufferSource();
+  noise.buffer = buffer;
+
+  const filter = ctx.createBiquadFilter();
+  filter.type = 'lowpass';
+  filter.frequency.setValueAtTime(big ? 800 : 1500, ctx.currentTime);
+  filter.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + duration);
+
+  const gain = ctx.createGain();
+  gain.gain.setValueAtTime(big ? 0.4 : 0.25, ctx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+
+  noise.connect(filter).connect(gain).connect(ctx.destination);
+  noise.start();
+  noise.stop(ctx.currentTime + duration);
+}
+
+const playAsteroidExplode = () => playExplosion({ big: false });
+const playPlayerHit = () => playExplosion({ big: true });
 
 export default function initStarDrift(container) {
   const W = 420, H = 520;
@@ -82,6 +129,7 @@ export default function initStarDrift(container) {
     if (keys[' ']) {
       if (!keys._shot) {
         bullets.push({ x: ship.x, y: ship.y - 10, vy: -9 });
+        playLaser();
         keys._shot = true;
       }
     } else keys._shot = false;
@@ -105,6 +153,7 @@ export default function initStarDrift(container) {
           hit = true;
           score += Math.round(a.r);
           explode(a.x, a.y, '#f4a261');
+          playAsteroidExplode();
           return false;
         }
         return true;
@@ -114,6 +163,7 @@ export default function initStarDrift(container) {
       if (Math.hypot(a.x - ship.x, a.y - ship.y) < a.r + 14) {
         hp -= 15;
         explode(a.x, a.y, '#e76f51');
+        playPlayerHit();
         updateHud();
         if (hp <= 0) {
           running = false;
