@@ -326,8 +326,18 @@ async function openGame(gameId) {
     const mod = await game.load();
     stage.innerHTML = '';
     activeGameCleanup = mod.default(stage);
-    stage.setAttribute('tabindex', '-1');
-    stage.focus({ preventScroll: true });
+stage.setAttribute('tabindex', '-1');
+stage.focus({ preventScroll: true });
+
+stage.addEventListener('click', e => {
+  const startBtn = e.target.closest('#gameStage .game-toolbar .btn-primary');
+
+  if (startBtn) {
+    setTimeout(() => {
+      stage.focus({ preventScroll: true });
+    }, 0);
+  }
+});
   } catch (err) {
     stage.innerHTML = '<p class="game-msg lose">Failed to load game.</p>';
     console.error(err);
@@ -361,31 +371,87 @@ export function setupGameScreen() {
   });
 
   document.addEventListener('keydown', e => {
-    const screen = document.getElementById('gameScreen');
-    const screenOpen = screen && !screen.classList.contains('hidden');
+  const screen = document.getElementById('gameScreen');
+  const screenOpen = screen && !screen.classList.contains('hidden');
 
-    if (e.key === 'Escape' && screenOpen) {
-      if (screen.classList.contains('rules-open')) {
-        screen.classList.remove('rules-open');
-        const btn = document.getElementById('gameRulesToggle');
-        btn.classList.remove('active');
-        btn.setAttribute('aria-expanded', 'false');
-        btn.textContent = '📖 Rules';
-        e.preventDefault();
+  if (e.key === 'Escape' && screenOpen) {
+    if (screen.classList.contains('rules-open')) {
+      screen.classList.remove('rules-open');
+      const btn = document.getElementById('gameRulesToggle');
+      btn.classList.remove('active');
+      btn.setAttribute('aria-expanded', 'false');
+      btn.textContent = '📖 Rules';
+      e.preventDefault();
+    }
+    return;
+  }
+
+  if (!screenOpen || screen.classList.contains('rules-open')) return;
+
+  const toolbar = e.target.closest?.('#gameStage .game-toolbar');
+  const buttons = toolbar
+    ? [...toolbar.querySelectorAll('button:not([disabled])')]
+    : [];
+
+  // Left / Right: navigate between game action buttons
+  // only while a toolbar button has focus.
+  if (
+    toolbar &&
+    buttons.length > 1 &&
+    (e.key === 'ArrowLeft' || e.key === 'ArrowRight')
+  ) {
+    const currentIndex = buttons.indexOf(e.target);
+
+    if (currentIndex !== -1) {
+      const direction = e.key === 'ArrowRight' ? 1 : -1;
+      const nextIndex =
+        (currentIndex + direction + buttons.length) % buttons.length;
+
+      buttons[nextIndex].focus();
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
+  }
+
+  // Enter: activate the focused game button.
+  if (e.key === 'Enter') {
+    const tag = e.target.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+
+    const focusedButton =
+      toolbar && e.target.matches('button:not([disabled])')
+        ? e.target
+        : null;
+
+    if (focusedButton) {
+      e.preventDefault();
+      focusedButton.click();
+
+      // After activating the primary/start button,
+      // return focus to the game so gameplay controls work.
+      if (focusedButton.classList.contains('btn-primary')) {
+        const stage = document.getElementById('gameStage');
+        stage?.focus({ preventScroll: true });
       }
+
       return;
     }
 
-    if (e.key === 'Enter' && screenOpen && !screen.classList.contains('rules-open')) {
-      const tag = e.target.tagName;
-      if (tag === 'INPUT' || tag === 'TEXTAREA') return;
-      const startBtn = document.querySelector('#gameStage .game-toolbar .btn-primary');
-      if (startBtn) {
-        e.preventDefault();
-        startBtn.click();
-      }
+    const startBtn = document.querySelector(
+      '#gameStage .game-toolbar .btn-primary'
+    );
+
+    if (startBtn) {
+      e.preventDefault();
+      startBtn.click();
+      startBtn.blur();
+
+      const stage = document.getElementById('gameStage');
+      stage?.focus({ preventScroll: true });
     }
-  });
+  }
+});
 }
 
 // Delegate clear stats button (stats page)
