@@ -1,5 +1,17 @@
 const SOUND_KEY = 'sound';
 
+let audioCtx = null;
+
+export function getAudioContext() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  if (audioCtx.state === 'suspended') {
+    audioCtx.resume();
+  }
+  return audioCtx;
+}
+
 export function isSoundEnabled() {
   try {
     return localStorage.getItem(SOUND_KEY) !== 'off';

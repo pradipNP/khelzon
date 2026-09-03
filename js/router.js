@@ -326,6 +326,8 @@ async function openGame(gameId) {
     const mod = await game.load();
     stage.innerHTML = '';
     activeGameCleanup = mod.default(stage);
+    stage.setAttribute('tabindex', '-1');
+    stage.focus({ preventScroll: true });
   } catch (err) {
     stage.innerHTML = '<p class="game-msg lose">Failed to load game.</p>';
     console.error(err);
@@ -359,8 +361,10 @@ export function setupGameScreen() {
   });
 
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape' && !document.getElementById('gameScreen').classList.contains('hidden')) {
-      const screen = document.getElementById('gameScreen');
+    const screen = document.getElementById('gameScreen');
+    const screenOpen = screen && !screen.classList.contains('hidden');
+
+    if (e.key === 'Escape' && screenOpen) {
       if (screen.classList.contains('rules-open')) {
         screen.classList.remove('rules-open');
         const btn = document.getElementById('gameRulesToggle');
@@ -368,6 +372,17 @@ export function setupGameScreen() {
         btn.setAttribute('aria-expanded', 'false');
         btn.textContent = '📖 Rules';
         e.preventDefault();
+      }
+      return;
+    }
+
+    if (e.key === 'Enter' && screenOpen && !screen.classList.contains('rules-open')) {
+      const tag = e.target.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+      const startBtn = document.querySelector('#gameStage .game-toolbar .btn-primary');
+      if (startBtn) {
+        e.preventDefault();
+        startBtn.click();
       }
     }
   });
