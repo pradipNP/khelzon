@@ -6,6 +6,29 @@ import { isLobbyRoute, getLobbyView, showLobbyView, hideLobbyScreen } from './lo
 let activeGameCleanup = null;
 let activeFilter = 'All';
 let activeSearch = '';
+let selectedGameAction = null;
+
+function getGameActions() {
+  const stage = document.getElementById('gameStage');
+  return stage ? [...stage.querySelectorAll('.game-toolbar button:not([disabled])')] : [];
+}
+
+function selectGameAction(button, focus = true) {
+  const actions = getGameActions();
+  if (!actions.includes(button)) return;
+  selectedGameAction = button;
+  actions.forEach(action => {
+    action.classList.toggle('game-action-selected', action === button);
+    action.setAttribute('aria-selected', String(action === button));
+  });
+  if (focus) button.focus({ preventScroll: true });
+}
+
+function initializeGameActions() {
+  const actions = getGameActions();
+  selectedGameAction = actions[0] || null;
+  if (selectedGameAction) selectGameAction(selectedGameAction);
+}
 export function initRouter(onNavigate) {
   window.addEventListener('hashchange', () => handleRoute(onNavigate));
   handleRoute(onNavigate);
@@ -327,7 +350,8 @@ async function openGame(gameId) {
     stage.innerHTML = '';
     activeGameCleanup = mod.default(stage);
     stage.setAttribute('tabindex', '-1');
-    stage.focus({ preventScroll: true });
+    initializeGameActions();
+    if (!selectedGameAction) stage.focus({ preventScroll: true });
   } catch (err) {
     stage.innerHTML = '<p class="game-msg lose">Failed to load game.</p>';
     console.error(err);
@@ -376,13 +400,30 @@ export function setupGameScreen() {
       return;
     }
 
+    if ((e.key === 'ArrowLeft' || e.key === 'ArrowRight') && screenOpen && !screen.classList.contains('rules-open')) {
+      const actions = getGameActions();
+      const focusedAction = e.target.closest?.('.game-toolbar button');
+      if (actions.length > 1 && focusedAction && actions.includes(focusedAction)) {
+        const currentIndex = actions.indexOf(focusedAction);
+        const direction = e.key === 'ArrowRight' ? 1 : -1;
+        const nextIndex = (currentIndex + direction + actions.length) % actions.length;
+        selectGameAction(actions[nextIndex]);
+        e.preventDefault();
+      }
+      return;
+    }
+
     if (e.key === 'Enter' && screenOpen && !screen.classList.contains('rules-open')) {
       const tag = e.target.tagName;
       if (tag === 'INPUT' || tag === 'TEXTAREA') return;
-      const startBtn = document.querySelector('#gameStage .game-toolbar .btn-primary');
-      if (startBtn) {
+      const actions = getGameActions();
+      const action = e.target.closest?.('.game-toolbar button') || selectedGameAction;
+      if (action && actions.includes(action)) {
         e.preventDefault();
-        startBtn.click();
+        selectGameAction(action, false);
+        action.click();
+        action.blur();
+        document.getElementById('gameStage')?.focus({ preventScroll: true });
       }
     }
   });
