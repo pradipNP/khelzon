@@ -1,6 +1,7 @@
 import { storage } from '../storage.js';
 import { fitCanvasDisplay } from '../gameFit.js';
 import { shareScore } from '../share.js';
+import { getAudioContext, isSoundEnabled } from '../sound.js';
 
 export default function initMeteorRun(container) {
   const W = 400, H = 500;
@@ -31,6 +32,88 @@ export default function initMeteorRun(container) {
   const ctx = canvas.getContext('2d');
   let shipX, meteors, score, hp, running, over, frame, raf;
 
+  function playThrusterSound() {
+  if (!isSoundEnabled()) return;
+  
+
+  const audioCtx = getAudioContext();
+  const oscillator = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+
+  oscillator.type = 'sine';
+  oscillator.frequency.setValueAtTime(120, audioCtx.currentTime);
+  oscillator.frequency.exponentialRampToValueAtTime(
+    80,
+    audioCtx.currentTime + 0.08
+  );
+
+  gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(
+    0.001,
+    audioCtx.currentTime + 0.08
+  );
+
+  oscillator.connect(gain);
+  gain.connect(audioCtx.destination);
+
+  oscillator.start();
+  oscillator.stop(audioCtx.currentTime + 0.08);
+}
+
+function playMeteorWhizSound() {
+  if (!isSoundEnabled()) return;
+
+  const audioCtx = getAudioContext();
+  const oscillator = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+
+  oscillator.type = 'sine';
+  oscillator.frequency.setValueAtTime(1000, audioCtx.currentTime);
+  oscillator.frequency.exponentialRampToValueAtTime(
+    180,
+    audioCtx.currentTime + 0.15
+  );
+
+  gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(
+    0.001,
+    audioCtx.currentTime + 0.15
+  );
+
+  oscillator.connect(gain);
+  gain.connect(audioCtx.destination);
+
+  oscillator.start();
+  oscillator.stop(audioCtx.currentTime + 0.15);
+}
+
+
+function playImpactSound() {
+  if (!isSoundEnabled()) return;
+
+  const audioCtx = getAudioContext();
+  const oscillator = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+
+  oscillator.type = 'sawtooth';
+  oscillator.frequency.setValueAtTime(100, audioCtx.currentTime);
+  oscillator.frequency.exponentialRampToValueAtTime(
+    40,
+    audioCtx.currentTime + 0.25
+  );
+
+  gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(
+    0.001,
+    audioCtx.currentTime + 0.25
+  );
+
+  oscillator.connect(gain);
+  gain.connect(audioCtx.destination);
+
+  oscillator.start();
+  oscillator.stop(audioCtx.currentTime + 0.25);
+}
   function reset() {
     shipX = W / 2;
     meteors = [];
@@ -97,10 +180,12 @@ export default function initMeteorRun(container) {
       const dx = m.x - shipX;
       const dy = m.y - shipY;
       if (Math.hypot(dx, dy) < m.r + 16) {
+        playMeteorWhizSound();
         hp -= 25;
         m.y = H + 999;
         document.getElementById('mrHp').textContent = Math.max(0, hp);
         if (hp <= 0) {
+          playImpactSound();
           over = true;
           running = false;
           storage.saveScore('meteor-run', score);
@@ -121,8 +206,15 @@ export default function initMeteorRun(container) {
   function onKey(e) {
     if (!running || over) return;
     const k = e.key.toLowerCase();
-    if (k === 'arrowleft' || k === 'a') shipX = Math.max(24, shipX - 14);
-    if (k === 'arrowright' || k === 'd') shipX = Math.min(W - 24, shipX + 14);
+   if (k === 'arrowleft' || k === 'a') {
+  shipX = Math.max(24, shipX - 14);
+  playThrusterSound();
+}
+
+if (k === 'arrowright' || k === 'd') {
+  shipX = Math.min(W - 24, shipX + 14);
+  playThrusterSound();
+}
     if (['arrowleft', 'arrowright'].includes(k)) e.preventDefault();
     draw();
   }
@@ -136,8 +228,15 @@ export default function initMeteorRun(container) {
 
   document.getElementById('mrDpad').addEventListener('click', e => {
     if (!running || over) return;
-    if (e.target.dataset.dir === 'left') shipX = Math.max(24, shipX - 14);
-    if (e.target.dataset.dir === 'right') shipX = Math.min(W - 24, shipX + 14);
+    if (e.target.dataset.dir === 'left') {
+  shipX = Math.max(24, shipX - 14);
+  playThrusterSound();
+}
+
+if (e.target.dataset.dir === 'right') {
+  shipX = Math.min(W - 24, shipX + 14);
+  playThrusterSound();
+}
     draw();
   });
 
