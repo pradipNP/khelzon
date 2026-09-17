@@ -1,6 +1,7 @@
 import { storage } from '../storage.js';
 import { fitGrid } from '../gameFit.js';
 import { shareScore } from '../share.js';
+import { isSoundEnabled, getAudioContext } from '../sound.js';
 
 const SIZE = 6;
 const PLAYER = 1;
@@ -73,12 +74,100 @@ export default function initTerritoryClash(container) {
 
   function applyMove(r, c, owner) {
     board[r][c] = owner;
+
+    if (owner === PLAYER && isSoundEnabled()) {
+      const ctx = getAudioContext();
+
+      if (ctx.state === 'suspended') {
+        ctx.resume();
+      }
+
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(180, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(90, ctx.currentTime + 0.06);
+
+      gain.gain.setValueAtTime(0.12, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.06);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start();
+      osc.stop(ctx.currentTime + 0.06);
+    }
+  }
+
+  function playClaimChime() {
+    if (!isSoundEnabled()) return;
+
+    const ctx = getAudioContext();
+
+    if (ctx.state === 'suspended') {
+      ctx.resume();
+    }
+
+    const now = ctx.currentTime;
+
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(520, now);
+    osc.frequency.setValueAtTime(780, now + 0.08);
+
+    gain.gain.setValueAtTime(0.001, now);
+    gain.gain.exponentialRampToValueAtTime(0.12, now + 0.015);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.16);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.start(now);
+    osc.stop(now + 0.16);
   }
 
   function endGame() {
     over = true;
     const you = count(PLAYER);
     const cpu = count(CPU);
+
+    if (isSoundEnabled()) {
+      const ctx = getAudioContext();
+
+      if (ctx.state === 'suspended') {
+        ctx.resume();
+      }
+
+      const now = ctx.currentTime;
+      const notes = you > cpu
+        ? [523.25, 659.25, 783.99]
+        : cpu > you
+          ? [392, 329.63, 261.63]
+          : [440, 440];
+
+      notes.forEach((frequency, index) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        const start = now + index * 0.12;
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(frequency, start);
+
+        gain.gain.setValueAtTime(0.001, start);
+        gain.gain.exponentialRampToValueAtTime(0.12, start + 0.015);
+        gain.gain.exponentialRampToValueAtTime(0.001, start + 0.18);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start(start);
+        osc.stop(start + 0.18);
+      });
+    }
+
     let msg;
     if (you > cpu) {
       msg = `<div class="game-msg win">Victory! You control ${you} tiles.</div>`;
@@ -90,13 +179,16 @@ export default function initTerritoryClash(container) {
       msg = `<div class="game-msg">Draw — ${you} tiles each.</div>`;
       storage.saveScore('territory-clash', you);
     }
-   document.getElementById('tcMsg').innerHTML = `
-  ${msg}
-  <button id="tcShareBtn" class="btn btn-share">Share Score ↗</button>
-`;
-document.getElementById('tcShareBtn').addEventListener('click', () => {
-  shareScore(you, 'Territory Clash');
-});
+
+    document.getElementById('tcMsg').innerHTML = `
+      ${msg}
+      <button id="tcShareBtn" class="btn btn-share">Share Score ↗</button>
+    `;
+
+    document.getElementById('tcShareBtn').addEventListener('click', () => {
+      shareScore(you, 'Territory Clash');
+    });
+
     updateHud();
     render();
   }
@@ -112,11 +204,14 @@ document.getElementById('tcShareBtn').addEventListener('click', () => {
       }
       return;
     }
+
     const [r, c] = moves[Math.floor(Math.random() * moves.length)];
     applyMove(r, c, CPU);
     playerTurn = true;
+
     if (!validMoves(PLAYER).length && !validMoves(CPU).length) endGame();
     else updateHud();
+
     render();
   }
 
@@ -126,6 +221,7 @@ document.getElementById('tcShareBtn').addEventListener('click', () => {
     if (!neighbors(r, c).some(([nr, nc]) => board[nr][nc] === PLAYER)) return;
 
     applyMove(r, c, PLAYER);
+    playClaimChime();
     playerTurn = false;
     updateHud();
     render();
@@ -134,23 +230,38 @@ document.getElementById('tcShareBtn').addEventListener('click', () => {
       endGame();
       return;
     }
+
     setTimeout(cpuTurn, 350);
   }
 
   function render() {
     gridEl.innerHTML = '';
+
     for (let r = 0; r < SIZE; r++) {
       for (let c = 0; c < SIZE; c++) {
         const cell = board[r][c];
         const btn = document.createElement('button');
+
         btn.type = 'button';
         btn.className = 'tc-cell';
-        if (cell === PLAYER) btn.classList.add('tc-player');
-        else if (cell === CPU) btn.classList.add('tc-cpu');
-        else if (playerTurn && !over && neighbors(r, c).some(([nr, nc]) => board[nr][nc] === PLAYER)) {
+
+        if (cell === PLAYER) {
+          btn.classList.add('tc-player');
+        } else if (cell === CPU) {
+          btn.classList.add('tc-cpu');
+        } else if (
+          playerTurn &&
+          !over &&
+          neighbors(r, c).some(([nr, nc]) => board[nr][nc] === PLAYER)
+        ) {
           btn.classList.add('tc-valid');
         }
-        btn.setAttribute('aria-label', cell === PLAYER ? 'Your tile' : cell === CPU ? 'CPU tile' : 'Empty cell');
+
+        btn.setAttribute(
+          'aria-label',
+          cell === PLAYER ? 'Your tile' : cell === CPU ? 'CPU tile' : 'Empty cell'
+        );
+
         btn.addEventListener('click', () => onCellClick(r, c));
         gridEl.appendChild(btn);
       }
@@ -158,7 +269,9 @@ document.getElementById('tcShareBtn').addEventListener('click', () => {
   }
 
   document.getElementById('tcNew').addEventListener('click', initBoard);
+
   const unfit = fitGrid(gridEl, playArea, SIZE, SIZE, 52);
+
   initBoard();
 
   return () => unfit();
